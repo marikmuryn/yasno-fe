@@ -1,30 +1,24 @@
 import React from 'react';
 import { Song } from '../store/api';
-import { useAppDispatch, useTypedSelector } from '../store/store';
-import { selectFavorite, toggleFavorite } from '../store/favoriteSlice';
+import { useTypedSelector } from '../store/store';
+import { selectFavorite } from '../store/favoriteSlice';
 import { SongCard } from './SongCard';
 
 interface SongListProps {
   data: Song[];
-  isShowNameArtist?: boolean;
+  isArtistNameShow?: boolean;
+  handleFavoriteToggle: (args: { artistId: string; songId: string }) => void;
 }
 
 export const SongList: React.FC<SongListProps> = ({
   data,
-  isShowNameArtist = false,
+  isArtistNameShow = false,
+  handleFavoriteToggle,
 }) => {
-  const dispatch = useAppDispatch();
   const favorites = useTypedSelector(selectFavorite);
 
-  const handleFavoriteToggle = React.useCallback(
-    ({ songId, artistId }: { songId: string; artistId: string }) => {
-      dispatch(toggleFavorite({ songId, artistId }));
-    },
-    [dispatch],
-  );
-
   return data.map(item => {
-    const isFevorite = favorites?.[item?.artistId]?.includes(item.id);
+    const isFavorite = favorites?.[item?.artistId]?.includes(item.id);
 
     return (
       <SongCard
@@ -32,9 +26,9 @@ export const SongList: React.FC<SongListProps> = ({
         name={item.name}
         duration={item.duration}
         imgSrc={item.cover}
-        isFavorite={isFevorite}
+        isFavorite={isFavorite}
         artistName={item.artistName}
-        isShowNameArtist={isShowNameArtist}
+        isArtistNameShow={isArtistNameShow}
         onClick={() =>
           handleFavoriteToggle({ artistId: item.artistId, songId: item.id })
         }

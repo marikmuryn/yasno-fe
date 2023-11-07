@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import { useGetArtistsQuery } from '../store/api';
 import { Error, Spinner, PageLayout, ArtistCard } from '../components';
+import { ROUTER } from '../constants/constants';
 
 export const Artists = () => {
-  const { data = [], isFetching, isError } = useGetArtistsQuery(undefined);
+  const { data = [], isFetching, isError } = useGetArtistsQuery();
 
   if (isFetching) {
     return <Spinner />;
@@ -25,7 +26,12 @@ export const Artists = () => {
       >
         {data?.map(artist => (
           <Grid key={artist.id} item>
-            <Link to={`/artists/${artist.id}`} key={artist.id}>
+            <Link
+              key={artist.id}
+              to={generatePath(`${ROUTER.artists}/:artistId`, {
+                artistId: artist.id,
+              })}
+            >
               <ArtistCard text={artist.name} imgSrc={artist.avatar} />
             </Link>
           </Grid>

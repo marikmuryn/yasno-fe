@@ -7,14 +7,15 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useTypedSelector } from '../store/store';
 import { selectTotalCount } from '../store/favoriteSlice';
 import { useTitle } from '../hooks/useTitle';
+import { ROUTER } from '../constants/constants';
 
 interface HeaderProps {
-  isShowBackButton?: boolean;
+  isBackButtonShow?: boolean;
   title: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  isShowBackButton = true,
+  isBackButtonShow = true,
   title,
 }) => {
   const navigation = useNavigate();
@@ -22,9 +23,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   useTitle(title);
 
-  const handleBackButtonClick = React.useCallback(() => {
+  const handleBackButtonClick = () => {
     navigation(-1);
-  }, []);
+  };
 
   return (
     <Box
@@ -36,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
         marginBlock: '40px',
       }}
     >
-      {isShowBackButton ? (
+      {isBackButtonShow ? (
         <Button variant="outlined" onClick={handleBackButtonClick}>
           <ArrowBackIcon />
         </Button>
@@ -47,7 +48,7 @@ export const Header: React.FC<HeaderProps> = ({
         {title}
       </Typography>
 
-      <Link to={totalCount ? '/favorites' : ''}>
+      <Link to={totalCount ? ROUTER.favorites : ROUTER.home}>
         <Badge badgeContent={totalCount} color="error">
           <FavoriteIcon color="action" />
         </Badge>

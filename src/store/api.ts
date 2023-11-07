@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { ARTIST_SONGS_PARAMS } from '../constants/constants';
 
 export interface Artist {
   id: string;
@@ -21,17 +22,20 @@ const BASE_URL = 'https://640799f62f01352a8a7faa72.mockapi.io/api/';
 export const artistsApi = createApi({
   reducerPath: 'artistApi',
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
-  tagTypes: ['Songs'],
+  tagTypes: ['Artist', 'Songs'],
   endpoints: buider => ({
-    getArtists: buider.query<Artist[], undefined>({
+    getArtists: buider.query<Artist[], void>({
       query: () => ({ url: 'artists' }),
+      providesTags: ['Artist'],
     }),
     getArtist: buider.query<Artist, string>({
       query: id => ({ url: `artists/${id}` }),
+      providesTags: ['Artist'],
     }),
     getArtistSongs: buider.query<Song[], { artistId: string; page: number }>({
-      query: ({ artistId, page = 1 }) => ({
-        url: `artists/${artistId}/songs?page=${page}&limit=5`,
+      query: ({ artistId, page }) => ({
+        url: `artists/${artistId}/songs`,
+        params: { page, limit: ARTIST_SONGS_PARAMS.limit },
       }),
       providesTags: result =>
         result

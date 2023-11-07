@@ -15,7 +15,7 @@ interface SongCardProps {
   imgSrc: string;
   artistName: string;
   isFavorite: boolean;
-  isShowNameArtist?: boolean;
+  isArtistNameShow?: boolean;
   onClick: () => void;
 }
 
@@ -25,7 +25,7 @@ export const SongCard: React.FC<SongCardProps> = ({
   imgSrc,
   isFavorite,
   artistName,
-  isShowNameArtist = false,
+  isArtistNameShow = false,
   onClick,
 }) => (
   <Card
@@ -34,7 +34,7 @@ export const SongCard: React.FC<SongCardProps> = ({
   >
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <CardContent sx={{ flex: '1 0 auto' }}>
-        {isShowNameArtist && (
+        {isArtistNameShow && (
           <Typography component="div" variant="h4">
             {artistName}
           </Typography>

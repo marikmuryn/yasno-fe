@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Pagination, Grid } from '@mui/material';
 import { useGetArtistQuery, useGetArtistSongsQuery } from '../store/api';
 import {
@@ -9,29 +9,43 @@ import {
   PageLayout,
   SongList,
 } from '../components/';
-
-const LIMIT = 5;
+import { useAppDispatch } from '../store/store';
+import { toggleFavorite } from '../store/favoriteSlice';
+import { ARTIST_SONGS_PARAMS } from '../constants/constants';
 
 export const Artist = () => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const { artistId } = useParams();
-
-  if (!artistId) return <Navigate to="/artists" replace />;
+  const dispatch = useAppDispatch();
 
   const {
     data: dataArtist,
     isFetching: isFetchingArtist,
     isError: isErrorArist,
-  } = useGetArtistQuery(artistId);
+  } = useGetArtistQuery(artistId as string, {
+    skip: !artistId,
+  });
 
   const {
     data: dataSongs = [],
     isFetching: isFetchingSongs,
     isError: isErrorSongs,
-  } = useGetArtistSongsQuery({
-    artistId,
-    page: currentPage,
-  });
+  } = useGetArtistSongsQuery(
+    {
+      artistId: artistId as string,
+      page: currentPage,
+    },
+    {
+      skip: !artistId,
+    },
+  );
+
+  const handleFavoriteToggle = React.useCallback(
+    ({ songId, artistId }: { songId: string; artistId: string }) => {
+      dispatch(toggleFavorite({ songId, artistId }));
+    },
+    [dispatch],
+  );
 
   if (isFetchingArtist || isFetchingSongs) {
     return <Spinner />;
@@ -53,11 +67,14 @@ export const Artist = () => {
         </Grid>
 
         <Grid item md={8}>
-          <SongList data={dataSongs} />
+          <SongList
+            data={dataSongs}
+            handleFavoriteToggle={handleFavoriteToggle}
+          />
           <Pagination
-            count={Math.ceil(dataArtist.songsCount / LIMIT)}
+            count={Math.ceil(dataArtist.songsCount / ARTIST_SONGS_PARAMS.limit)}
             page={currentPage}
-            onChange={(event: React.ChangeEvent<unknown>, newPage: number) => {
+            onChange={(_: React.ChangeEvent<unknown>, newPage: number) => {
               setCurrentPage(newPage);
             }}
           />
